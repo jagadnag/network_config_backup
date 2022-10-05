@@ -1,8 +1,8 @@
 Building configuration...
 
-Current configuration : 7253 bytes
+Current configuration : 7334 bytes
 !
-! Last configuration change at 17:35:09 UTC Wed Oct 5 2022 by developer
+! Last configuration change at 17:39:31 UTC Wed Oct 5 2022 by developer
 !
 version 17.3
 service timestamps debug datetime msec
@@ -228,6 +228,8 @@ ip scp server enable
 !
 !
 !
+snmp-server community ansible-public RO
+snmp-server community ansible-private RW
 !
 !
 !
