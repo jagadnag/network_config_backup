@@ -1,8 +1,8 @@
 Building configuration...
 
-Current configuration : 6863 bytes
+Current configuration : 7057 bytes
 !
-! Last configuration change at 15:39:23 UTC Wed Oct 5 2022 by NETCONF
+! Last configuration change at 15:54:59 UTC Wed Oct 5 2022 by NETCONF
 !
 version 17.3
 service timestamps debug datetime msec
@@ -174,6 +174,14 @@ redundancy
 interface Loopback100
  description Created via RESTCONF
  ip address 10.100.1.100 255.255.255.0
+!
+interface Loopback101
+ description Created via RESTCONF
+ ip address 10.101.1.100 255.255.255.0
+!
+interface Loopback102
+ description Created via RESTCONF
+ ip address 10.102.1.100 255.255.255.0
 !
 interface GigabitEthernet1
  description MANAGEMENT INTERFACE - DON'T TOUCH ME
