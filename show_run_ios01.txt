@@ -1,8 +1,8 @@
 Building configuration...
 
-Current configuration : 6658 bytes
+Current configuration : 6681 bytes
 !
-! Last configuration change at 14:40:53 UTC Wed Oct 5 2022 by NETCONF
+! Last configuration change at 14:43:58 UTC Wed Oct 5 2022 by NETCONF
 !
 version 17.3
 service timestamps debug datetime msec
@@ -179,7 +179,7 @@ interface GigabitEthernet1
 !
 interface GigabitEthernet2
  description Configured through NETCONF
- no ip address
+ ip address 10.37.37.37 255.255.255.0
  shutdown
  negotiation auto
  no mop enabled
