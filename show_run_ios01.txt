@@ -1,8 +1,8 @@
 Building configuration...
 
-Current configuration : 7334 bytes
+Current configuration : 7153 bytes
 !
-! Last configuration change at 19:05:12 UTC Wed Oct 5 2022 by developer
+! Last configuration change at 13:31:45 UTC Thu Oct 6 2022 by developer
 !
 version 17.3
 service timestamps debug datetime msec
@@ -138,6 +138,7 @@ license udi pid CSR1000V sn 9ESGOBARV9D
 license boot level ax
 diagnostic bootup level minimal
 memory free low-watermark processor 71556
+file prompt quiet
 !
 !
 spanning-tree extend system-id
@@ -171,25 +172,12 @@ redundancy
 ! 
 !
 !
-interface Loopback100
- description Created via RESTCONF
- ip address 10.100.1.100 255.255.255.0
+interface Loopback56
+ description this is a test loopback
+ ip address 56.56.56.56 255.255.255.255
 !
-interface Loopback101
- description Created via RESTCONF
- ip address 10.101.1.100 255.255.255.0
-!
-interface Loopback102
- description Created via RESTCONF
- ip address 10.102.1.100 255.255.255.0
-!
-interface Loopback103
- description Created via RESTCONF
- ip address 10.103.1.100 255.255.255.0
-!
-interface Loopback104
- description Created via RESTCONF
- ip address 10.104.1.100 255.255.255.0
+interface Loopback90
+ ip address 2.2.2.2 255.255.255.255
 !
 interface GigabitEthernet1
  description MANAGEMENT INTERFACE - DON'T TOUCH ME
@@ -199,9 +187,8 @@ interface GigabitEthernet1
  no mop sysid
 !
 interface GigabitEthernet2
- description Configured with IETF model
- ip address 10.38.38.38 255.255.255.0 secondary
- ip address 10.37.37.37 255.255.255.0
+ description Network Interface
+ no ip address
  shutdown
  negotiation auto
  no mop enabled
@@ -227,9 +214,17 @@ ip scp server enable
 !
 !
 !
+ip prefix-list TEST seq 20 permit 10.232.0.0/16
+ip access-list extended 102
+ 20 permit tcp any any eq 600
+ 30 permit udp any any eq 200
+ 40 permit icmp any any 250
+ 50 permit igmp any any 15
 !
-snmp-server community ansible-public RO
-snmp-server community ansible-private RW
+!
+snmp-server community cisco-course RO
+snmp-server location CA_HQ
+snmp-server contact CISCO_LAB
 !
 !
 !
