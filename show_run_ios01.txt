@@ -1,8 +1,8 @@
 Building configuration...
 
-Current configuration : 7153 bytes
+Current configuration : 7370 bytes
 !
-! Last configuration change at 13:31:45 UTC Thu Oct 6 2022 by developer
+! Last configuration change at 03:45:06 UTC Sun Oct 9 2022 by developer
 !
 version 17.3
 service timestamps debug datetime msec
@@ -138,7 +138,6 @@ license udi pid CSR1000V sn 9ESGOBARV9D
 license boot level ax
 diagnostic bootup level minimal
 memory free low-watermark processor 71556
-file prompt quiet
 !
 !
 spanning-tree extend system-id
@@ -172,22 +171,23 @@ redundancy
 ! 
 !
 !
-interface Loopback56
- description this is a test loopback
- ip address 56.56.56.56 255.255.255.255
-!
-interface Loopback90
- ip address 2.2.2.2 255.255.255.255
+interface VirtualPortGroup0
+ ip address 192.168.1.1 255.255.255.0
+ ip nat inside
+ no mop enabled
+ no mop sysid
 !
 interface GigabitEthernet1
  description MANAGEMENT INTERFACE - DON'T TOUCH ME
  ip address 10.10.20.48 255.255.255.0
+ ip nat outside
  negotiation auto
  no mop enabled
  no mop sysid
 !
 interface GigabitEthernet2
  description Network Interface
+ bandwidth 40000
  no ip address
  shutdown
  negotiation auto
@@ -202,29 +202,36 @@ interface GigabitEthernet3
  no mop enabled
  no mop sysid
 !
+router ospf 1
+ router-id 33.10.10.1
+!
+router ospf 33
+ router-id 33.33.33.33
+!
+router ospf 20
+ network 0.0.0.0 255.255.255.255 area 0
+!
+router bgp 111
+ bgp log-neighbor-changes
+ neighbor 1.1.1.1 remote-as 200
+!
+iox
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
+ip nat inside source list NAT-ACL interface GigabitEthernet1 overload
 ip route 0.0.0.0 0.0.0.0 GigabitEthernet1 10.10.20.254
 ip ssh rsa keypair-name ssh-key
 ip ssh version 2
 ip scp server enable
 !
+ip access-list extended NAT-ACL
+ 10 permit ip 192.168.1.0 0.0.0.255 any
 !
 !
-ip prefix-list TEST seq 20 permit 10.232.0.0/16
-ip access-list extended 102
- 20 permit tcp any any eq 600
- 30 permit udp any any eq 200
- 40 permit icmp any any 250
- 50 permit igmp any any 15
 !
-!
-snmp-server community cisco-course RO
-snmp-server location CA_HQ
-snmp-server contact CISCO_LAB
 !
 !
 !
@@ -258,11 +265,17 @@ call-home
  profile "CiscoTAC-1"
   active
   destination transport-method http
+ntp server 8.8.8.8
 !
 !
 !
 !
 !
+!
+app-hosting appid guestshell
+ app-vnic gateway0 virtualportgroup 0 guest-interface 0
+  guest-ipaddress 192.168.1.2 netmask 255.255.255.0
+ name-server0 8.8.8.8
 netconf-yang
 restconf
 end
