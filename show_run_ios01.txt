@@ -1,8 +1,8 @@
 Building configuration...
 
-Current configuration : 7370 bytes
+Current configuration : 8119 bytes
 !
-! Last configuration change at 03:45:06 UTC Sun Oct 9 2022 by developer
+! Last configuration change at 15:10:07 UTC Tue Oct 11 2022 by developer
 !
 version 17.3
 service timestamps debug datetime msec
@@ -144,6 +144,7 @@ spanning-tree extend system-id
 !
 username developer privilege 15 secret 9 $9$oNguEA9um9vRx.$MsDk0DOy1rzBjKAcySWdNjoKcA7GetG9YNnKOs8S67A
 username root privilege 15 secret 9 $9$IRHgr7MCAEFNLk$ZfOrXoRLFhh6gHIxhLPfOC9KzjIWISv4KqkNAR51kmI
+username demir_the_real_one privilege 15 secret 9 $9$iN.9bHNTchsk1.$Ed4oKyKe95IJuMIo6ec2P5Yt534mSVSy0d.hIr3OLj2
 !
 redundancy
 !
@@ -171,49 +172,55 @@ redundancy
 ! 
 !
 !
-interface VirtualPortGroup0
- ip address 192.168.1.1 255.255.255.0
- ip nat inside
- no mop enabled
- no mop sysid
+interface Loopback123
+ ip address 10.123.123.123 255.255.255.0
+!
+interface Loopback125
+ ip address 10.125.125.125 255.255.255.0
+!
+interface Loopback127
+ ip address 10.127.127.127 255.255.255.0
 !
 interface GigabitEthernet1
  description MANAGEMENT INTERFACE - DON'T TOUCH ME
  ip address 10.10.20.48 255.255.255.0
- ip nat outside
  negotiation auto
  no mop enabled
  no mop sysid
 !
 interface GigabitEthernet2
- description Network Interface
- bandwidth 40000
- no ip address
- shutdown
+ description Configured by RESTCONF
+ ip address 10.255.255.1 255.255.255.0
  negotiation auto
  no mop enabled
  no mop sysid
 !
 interface GigabitEthernet3
- description Network Interface
+ description Created via Py ( by Surendra)
  no ip address
- shutdown
  negotiation auto
  no mop enabled
  no mop sysid
 !
-router ospf 1
- router-id 33.10.10.1
+interface GigabitEthernet3.771
+ description Created by Navneet 
 !
-router ospf 33
- router-id 33.33.33.33
+interface GigabitEthernet3.772
+ description Created via Py ( by Surendra)
 !
-router ospf 20
- network 0.0.0.0 255.255.255.255 area 0
+interface GigabitEthernet3.773
+ description Created via Py ( by Surendra)
 !
-router bgp 111
+interface GigabitEthernet3.774
+ description Created via Py ( by Surendra)
+!
+interface GigabitEthernet3.775
+ description Created via Py ( by Surendra)
+!
+router bgp 100
  bgp log-neighbor-changes
- neighbor 1.1.1.1 remote-as 200
+ neighbor 1.1.1.1 remote-as 111
+ neighbor 2.2.2.2 remote-as 100
 !
 iox
 ip forward-protocol nd
@@ -221,14 +228,19 @@ ip http server
 ip http authentication local
 ip http secure-server
 !
-ip nat inside source list NAT-ACL interface GigabitEthernet1 overload
 ip route 0.0.0.0 0.0.0.0 GigabitEthernet1 10.10.20.254
+ip route 192.168.0.0 255.255.254.0 172.16.1.1 name site-specific
 ip ssh rsa keypair-name ssh-key
 ip ssh version 2
 ip scp server enable
 !
-ip access-list extended NAT-ACL
- 10 permit ip 192.168.1.0 0.0.0.255 any
+ip access-list extended EACL1
+ 20 remark Description
+ 20 permit tcp 10.0.0.0 0.0.0.255 eq 1000 host 10.1.1.1 range 1000 2000 established fin psh syn urg dscp ef
+ 30 permit tcp 11.0.0.0 0.10.0.255 eq 1000 host 10.1.1.1 range 1000 2000 established fin psh syn urg dscp ef
+ip access-list extended EACL2
+ 30 remark Description
+ 30 deny   tcp 10.0.0.0 0.0.10.255 eq 1000 host 10.1.1.1 range 1000 2000 established fin psh syn urg dscp ef
 !
 !
 !
@@ -241,6 +253,11 @@ control-plane
 !
 !
 !
+banner login ^C
+this is my DEMO login banner
+that contains a login message
+string
+^C
 banner motd ^C
 Welcome to the DevNet Sandbox for CSR1000v and IOS XE
  
@@ -265,17 +282,12 @@ call-home
  profile "CiscoTAC-1"
   active
   destination transport-method http
-ntp server 8.8.8.8
 !
 !
 !
 !
 !
-!
-app-hosting appid guestshell
- app-vnic gateway0 virtualportgroup 0 guest-interface 0
-  guest-ipaddress 192.168.1.2 netmask 255.255.255.0
- name-server0 8.8.8.8
 netconf-yang
+netconf-yang feature candidate-datastore
 restconf
 end
