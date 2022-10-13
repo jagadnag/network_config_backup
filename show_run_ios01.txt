@@ -1,8 +1,8 @@
 Building configuration...
 
-Current configuration : 8119 bytes
+Current configuration : 6639 bytes
 !
-! Last configuration change at 15:10:07 UTC Tue Oct 11 2022 by developer
+! Last configuration change at 14:36:30 UTC Thu Oct 13 2022
 !
 version 17.3
 service timestamps debug datetime msec
@@ -18,7 +18,6 @@ boot-start-marker
 boot-end-marker
 !
 !
-no logging console
 enable secret 9 $9$GNcSrWbM1PyCqU$9.BCza34ClqbgyABGzRV1v5hjCWhaoN9K.gqxCtcCvE
 !
 no aaa new-model
@@ -144,7 +143,6 @@ spanning-tree extend system-id
 !
 username developer privilege 15 secret 9 $9$oNguEA9um9vRx.$MsDk0DOy1rzBjKAcySWdNjoKcA7GetG9YNnKOs8S67A
 username root privilege 15 secret 9 $9$IRHgr7MCAEFNLk$ZfOrXoRLFhh6gHIxhLPfOC9KzjIWISv4KqkNAR51kmI
-username demir_the_real_one privilege 15 secret 9 $9$iN.9bHNTchsk1.$Ed4oKyKe95IJuMIo6ec2P5Yt534mSVSy0d.hIr3OLj2
 !
 redundancy
 !
@@ -172,15 +170,6 @@ redundancy
 ! 
 !
 !
-interface Loopback123
- ip address 10.123.123.123 255.255.255.0
-!
-interface Loopback125
- ip address 10.125.125.125 255.255.255.0
-!
-interface Loopback127
- ip address 10.127.127.127 255.255.255.0
-!
 interface GigabitEthernet1
  description MANAGEMENT INTERFACE - DON'T TOUCH ME
  ip address 10.10.20.48 255.255.255.0
@@ -189,58 +178,31 @@ interface GigabitEthernet1
  no mop sysid
 !
 interface GigabitEthernet2
- description Configured by RESTCONF
- ip address 10.255.255.1 255.255.255.0
+ description Network Interface
+ no ip address
+ shutdown
  negotiation auto
  no mop enabled
  no mop sysid
 !
 interface GigabitEthernet3
- description Created via Py ( by Surendra)
+ description Network Interface
  no ip address
+ shutdown
  negotiation auto
  no mop enabled
  no mop sysid
 !
-interface GigabitEthernet3.771
- description Created by Navneet 
-!
-interface GigabitEthernet3.772
- description Created via Py ( by Surendra)
-!
-interface GigabitEthernet3.773
- description Created via Py ( by Surendra)
-!
-interface GigabitEthernet3.774
- description Created via Py ( by Surendra)
-!
-interface GigabitEthernet3.775
- description Created via Py ( by Surendra)
-!
-router bgp 100
- bgp log-neighbor-changes
- neighbor 1.1.1.1 remote-as 111
- neighbor 2.2.2.2 remote-as 100
-!
-iox
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
 ip route 0.0.0.0 0.0.0.0 GigabitEthernet1 10.10.20.254
-ip route 192.168.0.0 255.255.254.0 172.16.1.1 name site-specific
 ip ssh rsa keypair-name ssh-key
 ip ssh version 2
 ip scp server enable
 !
-ip access-list extended EACL1
- 20 remark Description
- 20 permit tcp 10.0.0.0 0.0.0.255 eq 1000 host 10.1.1.1 range 1000 2000 established fin psh syn urg dscp ef
- 30 permit tcp 11.0.0.0 0.10.0.255 eq 1000 host 10.1.1.1 range 1000 2000 established fin psh syn urg dscp ef
-ip access-list extended EACL2
- 30 remark Description
- 30 deny   tcp 10.0.0.0 0.0.10.255 eq 1000 host 10.1.1.1 range 1000 2000 established fin psh syn urg dscp ef
 !
 !
 !
@@ -253,11 +215,6 @@ control-plane
 !
 !
 !
-banner login ^C
-this is my DEMO login banner
-that contains a login message
-string
-^C
 banner motd ^C
 Welcome to the DevNet Sandbox for CSR1000v and IOS XE
  
@@ -269,7 +226,6 @@ Thanks for stopping by.
 ^C
 !
 line con 0
- exec-timeout 0 0
  stopbits 1
 line vty 0 4
  login local
@@ -288,6 +244,5 @@ call-home
 !
 !
 netconf-yang
-netconf-yang feature candidate-datastore
 restconf
 end
