@@ -1,8 +1,8 @@
 Building configuration...
 
-Current configuration : 6639 bytes
+Current configuration : 8202 bytes
 !
-! Last configuration change at 14:36:30 UTC Thu Oct 13 2022
+! Last configuration change at 00:45:06 UTC Tue Oct 18 2022 by developer
 !
 version 17.3
 service timestamps debug datetime msec
@@ -18,6 +18,7 @@ boot-start-marker
 boot-end-marker
 !
 !
+no logging console
 enable secret 9 $9$GNcSrWbM1PyCqU$9.BCza34ClqbgyABGzRV1v5hjCWhaoN9K.gqxCtcCvE
 !
 no aaa new-model
@@ -29,6 +30,15 @@ no aaa new-model
 !
 !
 ip domain name lab.devnetsandbox.local
+ip dhcp excluded-address 172.16.0.1
+ip dhcp excluded-address 172.16.0.254
+!
+ip dhcp pool conf
+ network 172.16.0.0 255.255.255.0
+ default-router 172.16.0.1 
+ dns-server 172.16.0.1 172.16.0.1 
+ domain-name cisco-router.home
+ lease 9
 !
 !
 !
@@ -58,6 +68,11 @@ multilink bundle-name authenticated
 !
 !
 !
+!
+voice register global
+ mode cme
+ auto-register
+ !
 !
 !
 !
@@ -170,6 +185,13 @@ redundancy
 ! 
 !
 !
+interface Loopback0
+ ip address 172.16.0.1 255.255.0.0
+!
+interface Loopback56
+ description THIS IS A TEST LOOPBACK
+ ip address 56.56.56.56 255.255.255.255
+!
 interface GigabitEthernet1
  description MANAGEMENT INTERFACE - DON'T TOUCH ME
  ip address 10.10.20.48 255.255.255.0
@@ -193,6 +215,27 @@ interface GigabitEthernet3
  no mop enabled
  no mop sysid
 !
+router ospf 10
+!
+router ospf 19
+ router-id 33.44.88.22
+!
+router ospf 850
+ router-id 128.25.80.20
+!
+router ospf 22
+ router-id 33.44.73.22
+!
+router bgp 100
+ bgp log-neighbor-changes
+ neighbor 1.1.1.1 remote-as 200
+ neighbor 1.1.1.1 password C1sco12345
+ neighbor 1.1.1.1 update-source Loopback0
+ neighbor 2.2.2.2 remote-as 100
+ neighbor 2.2.2.2 description To LAN
+ neighbor 2.2.2.2 password cisco123
+ neighbor 2.2.2.2 update-source Loopback0
+!
 ip forward-protocol nd
 ip http server
 ip http authentication local
@@ -203,6 +246,14 @@ ip ssh rsa keypair-name ssh-key
 ip ssh version 2
 ip scp server enable
 !
+ip access-list extended EACL1
+ 20 remark Description
+ 20 permit tcp 10.0.0.0 0.0.0.255 eq 1000 host 10.1.1.1 range 1000 2000 established fin psh syn urg dscp ef
+ 30 remark Description
+ 30 deny   tcp 11.0.0.0 0.10.0.255 eq 1000 host 10.1.1.1 range 1000 2000 established fin psh syn urg dscp ef
+ip access-list extended EACL2
+ 30 remark Description
+ 30 permit tcp 10.0.0.0 0.0.10.255 eq 1000 host 10.1.1.1 range 1000 2000 established fin psh syn urg dscp ef
 !
 !
 !
@@ -214,6 +265,16 @@ control-plane
 !
 !
 !
+telephony-service
+ max-conferences 8 gain -6
+ transfer-system full-consult
+!
+!
+!
+!
+ephone-type 7966
+ num-buttons 1
+ max-presentation 1
 !
 banner motd ^C
 Welcome to the DevNet Sandbox for CSR1000v and IOS XE
@@ -226,6 +287,7 @@ Thanks for stopping by.
 ^C
 !
 line con 0
+ exec-timeout 0 0
  stopbits 1
 line vty 0 4
  login local
@@ -242,6 +304,7 @@ call-home
 !
 !
 !
+event manager session cli username "Test"
 !
 netconf-yang
 restconf
